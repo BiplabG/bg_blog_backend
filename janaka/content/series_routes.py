@@ -3,11 +3,12 @@ from flask import request
 from bson import ObjectId
 from bson.json_util import dumps
 from json import loads
+from flask_jwt_extended import jwt_required
 
 from janaka.content import content_api
 from janaka.db import db
 from .models import Series
-from . import helper_functions as hf
+from janaka.commons import helper_functions as hf
 
 @content_api.resource('/series')
 class AllSeries(Resource):
@@ -30,6 +31,7 @@ class AllSeries(Resource):
         except Exception as e:
             return hf.failure_message(operation='get_series_multiple', msg=str(e))
 
+    @jwt_required
     def post(self):
         """Create a new Series."""
         try:
@@ -72,6 +74,7 @@ class OneSeries(Resource):
         except Exception as e:
             return hf.failure_message(operation='get_series', msg=str(e))
 
+    @jwt_required
     def put(self, series_id):
         try:
             data = request.get_json()
@@ -103,6 +106,7 @@ class OneSeries(Resource):
         except Exception as e:
             return hf.failure_message(operation='update_series', msg=str(e))
 
+    @jwt_required
     def delete(self, series_id):
         try:
             series_old = db.series.find_one({'_id':ObjectId(series_id)})

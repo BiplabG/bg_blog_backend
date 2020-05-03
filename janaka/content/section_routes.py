@@ -3,10 +3,11 @@ from flask_restful import Resource
 from bson import ObjectId
 from bson.json_util import dumps
 from json import loads
+from flask_jwt_extended import jwt_required
 
 from . import content_api
 from .models import Section, Series
-from janaka.content import helper_functions as hf
+from janaka.commons import helper_functions as hf
 from janaka.db import db
 
 @content_api.resource('/section')
@@ -24,6 +25,7 @@ class AllSections(Resource):
         except Exception as e:
             return hf.failure_message(operation="get_sections", msg=str(e))
 
+    @jwt_required
     def post(self):
         """Post Request that handles creating new section."""
         try:
@@ -56,6 +58,7 @@ class OneSection(Resource):
         except Exception as e:
             return hf.failure_message(operation="get_section", msg=str(e))
 
+    @jwt_required
     def put(self, section_id):
         """Post request that handles editing a section."""
         try:
@@ -71,7 +74,7 @@ class OneSection(Resource):
         except Exception as e:
             return hf.failure_message(operation="update_section", msg=str(e))
         
-
+    @jwt_required
     def delete(self, section_id):
         """Delete request that deletes a section."""
         try:

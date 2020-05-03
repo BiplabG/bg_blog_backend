@@ -4,11 +4,12 @@ from bson import ObjectId
 from bson.json_util import dumps
 from json import loads
 import traceback
+from flask_jwt_extended import jwt_required
 
 from . import content_api
 from .models import Blog
 from janaka.db import db
-from janaka.content import helper_functions as hf
+from janaka.commons import helper_functions as hf
 
 @content_api.resource('/blog')
 class AllBlogs(Resource):
@@ -34,6 +35,7 @@ class AllBlogs(Resource):
         except Exception as e:
             return hf.failure_message(operation='get_blogs', msg=str(e))
 
+    @jwt_required
     def post(self):
         """Post Request that handles creating new blog."""
         try:
@@ -76,6 +78,7 @@ class OneBlog(Resource):
         except Exception as e:
             return hf.failure_message(operation='get_blog', msg=str(e))
 
+    @jwt_required
     def put(self, blog_id):
         """Put request that handles editing/updating a blog."""
         try:
@@ -108,6 +111,7 @@ class OneBlog(Resource):
             traceback.print_exc()
             return hf.failure_message(operation='update_blog', msg=str(e))
 
+    @jwt_required
     def delete(self, blog_id):
         """Delete request that deletes an existing blog."""
         try:

@@ -9,7 +9,7 @@ from json import loads
 
 from janaka.db import db
 from janaka.authentication import auth_api 
-from . import helper_functions as hf
+from janaka.commons import helper_functions as hf
 from .models import User
 
 @auth_api.resource('/register')
@@ -42,7 +42,7 @@ class Login(Resource):
             user_instance = db.user.find_one({'email':data['email']})
             if check_password_hash(user_instance['password'], data['password']):
                 access_token = create_access_token(identity=data['email'])
-                refresh_token = create_refresh_token(identity=data['email'])
+                # refresh_token = create_refresh_token(identity=data['email'])
             else:
                 raise Exception("Incorrect Password.")
 
@@ -50,7 +50,7 @@ class Login(Resource):
                 'operation':'login_admin',
                 'success':True,
                 'access_token':access_token,
-                'refresh_token':refresh_token,
+                # 'refresh_token':refresh_token,
                 'message':'Admin user logged in successfully.'
             }
         except Exception as e:
@@ -107,11 +107,12 @@ class ChangePassword(Resource):
     def put(self):
         try:
             data=request.get_json()
-            hf.is_valid_data_keys(data, ['new_password', 'current_password'])
+            hf.is_valid_data_keys(data, ['new_password1', 'new_password2', 'current_password'])
             current_user=get_jwt_identity()
             user_instance=db.user.find_one({'email':current_user})
             assert check_password_hash(user_instance['password'], data['current_password']), "Incorrect current password provided."
-            db.user.update_one({'email':current_user}, {'$set':{'password':generate_password_hash(data['new_password'])}})
+            assert data['new_password1']==data['new_password2'], "The new passwords do not match."
+            db.user.update_one({'email':current_user}, {'$set':{'password':generate_password_hash(data['new_password1'])}})
             return {
                 'operation':'change_password',
                 'success':True,

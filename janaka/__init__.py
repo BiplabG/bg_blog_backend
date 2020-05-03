@@ -7,17 +7,7 @@ from janaka.db import db
 def create_app(test_config=None):
     #Create and configure the flask app
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY="Devl0pmenT",
-        JWT_SECRET_KEY="devlopment@secret",
-        JWT_BLACKLIST_ENABLED = True,
-        JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
-    )
-
-    if test_config is None:
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        app.config.from_mapping(test_config)
+    app.config.from_pyfile('config.py', silent=True)
 
     #Make sure the instance folder exists
     try:

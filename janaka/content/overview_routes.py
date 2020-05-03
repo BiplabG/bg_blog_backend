@@ -6,7 +6,7 @@ from json import loads
 
 from janaka.content import content_api
 from janaka.db import db
-from . import helper_functions as hf
+from janaka.commons import helper_functions as hf
 
 blog_return_items = ['title', 'date_created'] #Fields to be sent for blog in the overview.
 
