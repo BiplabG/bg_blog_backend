@@ -1,9 +1,11 @@
-from flask import request
+from flask import request, current_app
 from flask_restful import Resource
 from bson import ObjectId
 from bson.json_util import dumps
 from json import loads
 from flask_jwt_extended import jwt_required
+from werkzeug.utils import secure_filename
+import os
 
 from . import content_api
 from .models import Section, Series
@@ -87,4 +89,24 @@ class OneSection(Resource):
             }
         except Exception as e:
             return hf.failure_message(operation="delete_section", msg=str(e))
+    
+@content_api.resource('/section/<string:section_id>/upload_image')
+class SectionImage(Resource):
+    def put(self, section_id):
+        try:
+            assert 'file' in request.files, "No file sent in the upload."
+            file=request.files['file']
+            assert file.filename!="", "No file selected."
+            hf.is_file_allowed(file.filename)
+            filename=secure_filename(file.filename)
+            file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], 'section/', filename))
+            db.section.update({'_id':ObjectId(section_id)}, {'$set':{'image':filename}})
+            return {
+                'operation':'upload_section_image',
+                'success':True,
+                'message':"Section image uploaded successfully."
+            }
+        
+        except Exception as e:
+            return hf.failure_message(operation="upload_section_image", msg=str(e))
     

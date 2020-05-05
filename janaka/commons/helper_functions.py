@@ -19,3 +19,8 @@ def failure_message(operation, msg):
         "message":f"Exception encountered buddy. Here is the exception message that can be helpful: {msg}",
     }
     
+ALLOWED_EXTENSIONS={'png', 'jpg', 'jpeg', 'gif'}
+def is_file_allowed(filename):
+    assert '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS, \
+            f"Improper file extension provided. Supported file types: png, jpg, jpeg and gif."
